@@ -1,3 +1,5 @@
+import static java.util.Objects.requireNonNull;
+
 /**
  * Array based storage for Resumes
  */
@@ -5,18 +7,24 @@ public class ArrayStorage {
 
     private static Integer STORAGE_LENGTH = 10000;
 
-    Resume[] storage = new Resume[STORAGE_LENGTH];
+    private Resume[] storage = new Resume[STORAGE_LENGTH];
 
-    int size = 0;
+    private  int size = 0;
 
     void clear() {
+        for (int i = 0; i < size; i++) {
+            storage[i] = null;
+        }
         size = 0;
-        storage = null;
     }
 
     void save(Resume r) {
         if (size == storage.length) {
             System.out.println("Хранилище заполнено");
+            return;
+        }
+        if (resumeExists(r.uuid)) {
+            System.out.println("Error");
             return;
         }
         storage[size++] = r;
@@ -29,7 +37,21 @@ public class ArrayStorage {
 
     void delete(String uuid) {
         int id = findIndex(uuid);
+        if (id < 0) {
+            System.out.println("Error");
+            return;
+        }
         storage[id] = storage[--size];
+        storage[size] = null;
+    }
+
+    void update(Resume r) {
+        int id = findIndex(r.uuid);
+        if (id < 0) {
+            System.out.println("Error");
+            return;
+        }
+        storage[id] = r;
     }
 
     /**
@@ -56,6 +78,10 @@ public class ArrayStorage {
             }
         }
         return id;
+    }
+
+    private boolean resumeExists(String uuid) {
+        return findIndex(uuid) >= 0;
     }
 
 }
