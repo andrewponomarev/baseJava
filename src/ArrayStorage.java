@@ -19,7 +19,7 @@ public class ArrayStorage {
     }
 
     void save(Resume r) {
-        requireNonNull(r, "Resume is null")
+        requireNonNull(r, "Resume is null");
         if (size == storage.length) {
             System.out.println("Хранилище заполнено");
             return;
