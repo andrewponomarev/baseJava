@@ -19,11 +19,13 @@ public class ArrayStorage {
     }
 
     void save(Resume r) {
+        requireNonNull(r, "Resume is null")
         if (size == storage.length) {
             System.out.println("Хранилище заполнено");
             return;
         }
-        if (resumeExists(r.uuid)) {
+        int id = findIndex(r.uuid);
+        if (id >= 0) {
             System.out.println("Error");
             return;
         }
@@ -32,7 +34,11 @@ public class ArrayStorage {
 
     Resume get(String uuid) {
         int id = findIndex(uuid);
-        return id < 0 ? null : storage[id];
+        if (id < 0) {
+            System.out.println("Error");
+            return null;
+        }
+        return storage[id];
     }
 
     void delete(String uuid) {
@@ -46,6 +52,7 @@ public class ArrayStorage {
     }
 
     void update(Resume r) {
+        requireNonNull(r, "Resume is null");
         int id = findIndex(r.uuid);
         if (id < 0) {
             System.out.println("Error");
@@ -59,9 +66,7 @@ public class ArrayStorage {
      */
     Resume[] getAll() {
         Resume[] result = new Resume[size];
-        if (storage != null) {
-            System.arraycopy(storage,0, result, 0, size);
-        }
+        System.arraycopy(storage,0, result, 0, size);
         return result;
     }
 
@@ -78,10 +83,6 @@ public class ArrayStorage {
             }
         }
         return id;
-    }
-
-    private boolean resumeExists(String uuid) {
-        return findIndex(uuid) >= 0;
     }
 
 }
