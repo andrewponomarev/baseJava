@@ -11,72 +11,27 @@ import static java.util.Objects.requireNonNull;
  */
 public class ArrayStorage extends AbstractArrayStorage{
 
-    private static Integer STORAGE_LENGTH = 10000;
-
-    private Resume[] storage = new Resume[STORAGE_LENGTH];
-
-    private  int size = 0;
-
-    public void clear() {
-        Arrays.fill(storage, 0, size, null);
-        size = 0;
-    }
-
-    public void save(Resume r) {
-        requireNonNull(r, "model.Resume is null");
-        if (size == storage.length) {
-            System.out.println("Storage overflow");
-            return;
-        }
-        if (getIndex(r.getUuid()) >= 0) {
-            System.out.println("model.Resume " + r.getUuid() + " already exist");
-            return;
-        }
-        storage[size++] = r;
-    }
-
-    public void delete(String uuid) {
-        int id = getIndex(uuid);
-        if (id < 0) {
-            System.out.println("model.Resume " + uuid + " not exist");
-            return;
-        }
-        storage[id] = storage[--size];
-        storage[size] = null;
-    }
-
-    public void update(Resume r) {
-        requireNonNull(r, "model.Resume is null");
-        int id = getIndex(r.getUuid());
-        if (id < 0) {
-            System.out.println("model.Resume " + r.getUuid() + " not exist");
-            return;
-        }
-        storage[id] = r;
-    }
-
-    /**
-     * @return array, contains only Resumes in storage (without null)
-     */
-    public Resume[] getAll() {
-        Resume[] result = new Resume[size];
-        Arrays.copyOfRange(storage, 0, size);
-        return result;
-    }
-
-    public int size() {
-        return size;
-    }
-
+    @Override
     protected int getIndex(String uuid) {
-        int id = -1;
+        int index = -1;
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
-                id = i;
+                index = i;
                 break;
             }
         }
-        return id;
+        return index;
+    }
+
+    @Override
+    protected void addToStorage(Resume r, int index) {
+        storage[size++] = r;
+    }
+
+    @Override
+    protected void removeFromStorage(int index) {
+        storage[index] = storage[--size];
+        storage[size] = null;
     }
 
 }
