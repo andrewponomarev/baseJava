@@ -9,7 +9,7 @@ import static java.util.Objects.requireNonNull;
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage implements Storage{
+public class ArrayStorage extends AbstractArrayStorage{
 
     private static Integer STORAGE_LENGTH = 10000;
 
@@ -28,24 +28,15 @@ public class ArrayStorage implements Storage{
             System.out.println("Storage overflow");
             return;
         }
-        if (findIndex(r.getUuid()) >= 0) {
+        if (getIndex(r.getUuid()) >= 0) {
             System.out.println("model.Resume " + r.getUuid() + " already exist");
             return;
         }
         storage[size++] = r;
     }
 
-    public Resume get(String uuid) {
-        int id = findIndex(uuid);
-        if (id < 0) {
-            System.out.println("model.Resume " + uuid + " not exist");
-            return null;
-        }
-        return storage[id];
-    }
-
     public void delete(String uuid) {
-        int id = findIndex(uuid);
+        int id = getIndex(uuid);
         if (id < 0) {
             System.out.println("model.Resume " + uuid + " not exist");
             return;
@@ -56,7 +47,7 @@ public class ArrayStorage implements Storage{
 
     public void update(Resume r) {
         requireNonNull(r, "model.Resume is null");
-        int id = findIndex(r.getUuid());
+        int id = getIndex(r.getUuid());
         if (id < 0) {
             System.out.println("model.Resume " + r.getUuid() + " not exist");
             return;
@@ -77,7 +68,7 @@ public class ArrayStorage implements Storage{
         return size;
     }
 
-    private int findIndex(String uuid) {
+    protected int getIndex(String uuid) {
         int id = -1;
         for (int i = 0; i < size; i++) {
             if (uuid.equals(storage[i].getUuid())) {
