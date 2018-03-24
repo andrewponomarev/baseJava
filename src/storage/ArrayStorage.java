@@ -1,9 +1,15 @@
+package storage;
+
+import model.Resume;
+
+import java.util.Arrays;
+
 import static java.util.Objects.requireNonNull;
 
 /**
  * Array based storage for Resumes
  */
-public class ArrayStorage {
+public class ArrayStorage implements Storage{
 
     private static Integer STORAGE_LENGTH = 10000;
 
@@ -11,51 +17,48 @@ public class ArrayStorage {
 
     private  int size = 0;
 
-    void clear() {
-        for (int i = 0; i < size; i++) {
-            storage[i] = null;
-        }
+    public void clear() {
+        Arrays.fill(storage, 0, size, null);
         size = 0;
     }
 
-    void save(Resume r) {
-        requireNonNull(r, "Resume is null");
+    public void save(Resume r) {
+        requireNonNull(r, "model.Resume is null");
         if (size == storage.length) {
-            System.out.println("Хранилище заполнено");
+            System.out.println("Storage overflow");
             return;
         }
-        int id = findIndex(r.uuid);
-        if (id >= 0) {
-            System.out.println("Error");
+        if (findIndex(r.getUuid()) >= 0) {
+            System.out.println("model.Resume " + r.getUuid() + " already exist");
             return;
         }
         storage[size++] = r;
     }
 
-    Resume get(String uuid) {
+    public Resume get(String uuid) {
         int id = findIndex(uuid);
         if (id < 0) {
-            System.out.println("Error");
+            System.out.println("model.Resume " + uuid + " not exist");
             return null;
         }
         return storage[id];
     }
 
-    void delete(String uuid) {
+    public void delete(String uuid) {
         int id = findIndex(uuid);
         if (id < 0) {
-            System.out.println("Error");
+            System.out.println("model.Resume " + uuid + " not exist");
             return;
         }
         storage[id] = storage[--size];
         storage[size] = null;
     }
 
-    void update(Resume r) {
-        requireNonNull(r, "Resume is null");
-        int id = findIndex(r.uuid);
+    public void update(Resume r) {
+        requireNonNull(r, "model.Resume is null");
+        int id = findIndex(r.getUuid());
         if (id < 0) {
-            System.out.println("Error");
+            System.out.println("model.Resume " + r.getUuid() + " not exist");
             return;
         }
         storage[id] = r;
@@ -64,20 +67,20 @@ public class ArrayStorage {
     /**
      * @return array, contains only Resumes in storage (without null)
      */
-    Resume[] getAll() {
+    public Resume[] getAll() {
         Resume[] result = new Resume[size];
-        System.arraycopy(storage,0, result, 0, size);
+        Arrays.copyOfRange(storage, 0, size);
         return result;
     }
 
-    int size() {
+    public int size() {
         return size;
     }
 
     private int findIndex(String uuid) {
         int id = -1;
         for (int i = 0; i < size; i++) {
-            if (uuid.equals(storage[i].uuid)) {
+            if (uuid.equals(storage[i].getUuid())) {
                 id = i;
                 break;
             }
