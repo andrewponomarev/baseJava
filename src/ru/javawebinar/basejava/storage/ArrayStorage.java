@@ -1,13 +1,11 @@
-package storage;
+package ru.javawebinar.basejava.storage;
 
-import model.Resume;
-
-import java.util.Arrays;
+import ru.javawebinar.basejava.model.Resume;
 
 import static java.util.Objects.requireNonNull;
 
 /**
- * Array based storage for Resumes
+ * Array based ru.javawebinar.basejava.storage for Resumes
  */
 public class ArrayStorage extends AbstractArrayStorage{
 
