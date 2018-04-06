@@ -8,7 +8,7 @@ import java.util.Arrays;
 import static java.util.Objects.requireNonNull;
 
 /**
- * Array based ru.javawebinar.basejava.storage for Resumes
+ * Array based storage for Resumes
  */
 public abstract class AbstractArrayStorage implements Storage {
 
@@ -22,24 +22,24 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     public void update(Resume r) {
-        requireNonNull(r, "ru.javawebinar.basejava.model.Resume is null");
+        requireNonNull(r, "Resume is null");
         int id = getIndex(r.getUuid());
         if (id < 0) {
-            System.out.println("ru.javawebinar.basejava.model.Resume " + r.getUuid() + " not exist");
+            System.out.println("Resume " + r.getUuid() + " not exist");
             return;
         }
         storage[id] = r;
     }
 
     public void save(Resume r) {
-        requireNonNull(r, "ru.javawebinar.basejava.model.Resume is null");
+        requireNonNull(r, "Resume is null");
         if (size == storage.length) {
             System.out.println("Storage overflow");
             return;
         }
         int index = getIndex(r.getUuid());
         if (index >= 0) {
-            System.out.println("ru.javawebinar.basejava.model.Resume " + r.getUuid() + " already exist");
+            System.out.println("Resume " + r.getUuid() + " already exist");
             return;
         }
         addToStorage(r, index);
@@ -60,7 +60,7 @@ public abstract class AbstractArrayStorage implements Storage {
     }
 
     /**
-     * @return array, contains only Resumes in ru.javawebinar.basejava.storage (without null)
+     * @return array, contains only Resumes in storage (without null)
      */
     public Resume[] getAll() {
         return Arrays.copyOfRange(storage, 0, size);
@@ -69,7 +69,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("ru.javawebinar.basejava.model.Resume " + uuid + " not exist");
+            System.out.println("Resume " + uuid + " not exist");
             return;
         }
         size--;
