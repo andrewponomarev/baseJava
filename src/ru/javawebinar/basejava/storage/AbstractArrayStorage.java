@@ -1,6 +1,9 @@
 package ru.javawebinar.basejava.storage;
 
 
+import ru.javawebinar.basejava.exception.ExistStorageException;
+import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
@@ -23,24 +26,21 @@ public abstract class AbstractArrayStorage implements Storage {
 
     public void update(Resume r) {
         requireNonNull(r, "Resume is null");
-        int id = getIndex(r.getUuid());
-        if (id < 0) {
-            System.out.println("Resume " + r.getUuid() + " not exist");
-            return;
+        int index = getIndex(r.getUuid());
+        if (index < 0) {
+            throw new NotExistStorageException(r.getUuid());
         }
-        storage[id] = r;
+        storage[index] = r;
     }
 
     public void save(Resume r) {
         requireNonNull(r, "Resume is null");
         if (size == storage.length) {
-            System.out.println("Storage overflow");
-            return;
+            throw new StorageException("Storage overflow", r.getUuid());
         }
         int index = getIndex(r.getUuid());
         if (index >= 0) {
-            System.out.println("Resume " + r.getUuid() + " already exist");
-            return;
+            throw new ExistStorageException(r.getUuid());
         }
         addToStorage(r, index);
         size++;
@@ -53,8 +53,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public Resume get(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("Resume " + uuid + " not exist");
-            return null;
+            throw new NotExistStorageException(uuid);
         }
         return storage[index];
     }
@@ -69,8 +68,7 @@ public abstract class AbstractArrayStorage implements Storage {
     public void delete(String uuid) {
         int index = getIndex(uuid);
         if (index < 0) {
-            System.out.println("Resume " + uuid + " not exist");
-            return;
+            throw new NotExistStorageException(uuid);
         }
         size--;
         removeFromStorage(index);
