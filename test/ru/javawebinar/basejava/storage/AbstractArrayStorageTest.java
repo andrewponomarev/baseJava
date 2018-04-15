@@ -1,19 +1,16 @@
 package ru.javawebinar.basejava.storage;
 
-import com.sun.org.apache.regexp.internal.RE;
-import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 
-public class AbstractArrayStorageTest {
+public abstract class AbstractArrayStorageTest {
 
     private Storage storage;
 
@@ -79,6 +76,13 @@ public class AbstractArrayStorageTest {
     @Test(expected = ExistStorageException.class)
     public void saveExistResume() throws Exception {
         storage.save(RESUME_1);
+    }
+
+    @Test(expected = StorageException.class)
+    public void saveOverflow() throws Exception {
+        for (int i = storage.size(); i < AbstractArrayStorage.STORAGE_LIMIT + 1; i++) {
+            storage.save(new Resume());
+        }
     }
 
     @Test(expected = NotExistStorageException.class)
