@@ -1,19 +1,15 @@
 package ru.javawebinar.basejava.storage;
 
 
-import ru.javawebinar.basejava.exception.ExistStorageException;
-import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.Arrays;
 
-import static java.util.Objects.requireNonNull;
-
 /**
  * Array based storage for Resumes
  */
-public abstract class AbstractArrayStorage implements Storage {
+public abstract class AbstractArrayStorage extends AbstractStorage {
 
     protected static final int STORAGE_LIMIT = 10000;
     protected Resume[] storage = new Resume[STORAGE_LIMIT];
@@ -24,25 +20,17 @@ public abstract class AbstractArrayStorage implements Storage {
         size = 0;
     }
 
-    public void update(Resume r) {
-        requireNonNull(r, "Resume is null");
-        int index = getIndex(r.getUuid());
-        if (index < 0) {
-            throw new NotExistStorageException(r.getUuid());
-        }
-        storage[index] = r;
+    @Override
+    protected void doUpdate(Resume r, Object key) {
+        storage[(Integer)key] = r;
     }
 
-    public void save(Resume r) {
-        requireNonNull(r, "Resume is null");
+    @Override
+    protected void doSave(Resume r, Object key) {
         if (size == storage.length) {
             throw new StorageException("Storage overflow", r.getUuid());
         }
-        int index = getIndex(r.getUuid());
-        if (index >= 0) {
-            throw new ExistStorageException(r.getUuid());
-        }
-        addToStorage(r, index);
+        addToStorage(r, (Integer)key);
         size++;
     }
 
@@ -50,12 +38,9 @@ public abstract class AbstractArrayStorage implements Storage {
         return size;
     }
 
-    public Resume get(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
-        return storage[index];
+    @Override
+    protected Resume doGet(Object key) {
+        return storage[(Integer) key];
     }
 
     /**
@@ -65,16 +50,19 @@ public abstract class AbstractArrayStorage implements Storage {
         return Arrays.copyOfRange(storage, 0, size);
     }
 
-    public void delete(String uuid) {
-        int index = getIndex(uuid);
-        if (index < 0) {
-            throw new NotExistStorageException(uuid);
-        }
+    @Override
+    protected void doDelete(Object key) {
         size--;
-        removeFromStorage(index);
+        removeFromStorage((Integer) key);
     }
 
-    protected abstract int getIndex(String uuid);
+    @Override
+    protected boolean isExist(Object index) {
+        return (Integer) index >= 0;
+    }
+
+
+    protected abstract Integer getKey(String uuid);
 
     protected abstract void addToStorage(Resume r, int index);
 
