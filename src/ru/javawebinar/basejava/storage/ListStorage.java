@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
@@ -32,7 +33,10 @@ public class ListStorage extends AbstractStorage{
 
     @Override
     protected void doSave(Resume r, Object key) {
-        storage.add((Integer) key, r);
+        if (STORAGE_LIMIT == storage.size()) {
+            throw new StorageException("Storage overflow", r.getUuid());
+        }
+        storage.add(r);
     }
 
     @Override
@@ -53,11 +57,12 @@ public class ListStorage extends AbstractStorage{
 
     @Override
     public Resume[] getAll() {
-        return (Resume[])storage.toArray();
+        Resume[] result  = storage.stream().toArray(Resume[]::new);
+        return result;
     }
 
     @Override
     public int size() {
-        return 0;
+        return storage.size();
     }
 }
