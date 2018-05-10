@@ -49,8 +49,8 @@ public class MapUuidStorage extends AbstractStorage {
 
 
     @Override
-    public List<Resume> getAllSorted() {
-        return storage.values().stream().sorted().collect(Collectors.toList());
+    public List<Resume> doCopyAll() {
+        return storage.values().stream().collect(Collectors.toList());
     }
 
     @Override

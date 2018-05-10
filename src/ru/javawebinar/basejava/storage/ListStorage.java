@@ -52,7 +52,7 @@ public class ListStorage extends AbstractStorage{
     }
 
     @Override
-    public List<Resume> getAllSorted() {
+    public List<Resume> doCopyAll() {
         return storage;
     }
 
@@ -60,4 +60,5 @@ public class ListStorage extends AbstractStorage{
     public int size() {
         return storage.size();
     }
+
 }
