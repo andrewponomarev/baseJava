@@ -1,5 +1,6 @@
 package ru.javawebinar.basejava.storage;
 
+import ru.javawebinar.basejava.exception.StorageException;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.ArrayList;
@@ -11,47 +12,57 @@ public class ListStorage extends AbstractStorage{
 
 
     @Override
-    protected Object getKey(String uuid) {
-        return null;
+    protected Integer getKey(String uuid) {
+        for (int i = 0; i < storage.size(); i++) {
+            if (storage.get(i).getUuid().equals(uuid)) {
+                return i;
+            }
+        }
+        return -1;
     }
 
     @Override
     protected void doUpdate(Resume r, Object key) {
-
+        storage.set((Integer) key, r);
     }
 
     @Override
     protected boolean isExist(Object key) {
-        return false;
+        return (Integer) key >= 0;
     }
 
     @Override
     protected void doSave(Resume r, Object key) {
-
+        if (STORAGE_LIMIT == storage.size()) {
+            throw new StorageException("Storage overflow", r.getUuid());
+        }
+        storage.add(r);
     }
 
     @Override
     protected Resume doGet(Object key) {
-        return null;
+        return storage.get((Integer) key);
     }
 
     @Override
     protected void doDelete(Object key) {
-
+        int intKey = ((Integer) key).intValue();
+        storage.remove(intKey);
     }
 
     @Override
     public void clear() {
-
+        storage.clear();
     }
 
     @Override
     public Resume[] getAll() {
-        return new Resume[0];
+        Resume[] result  = storage.stream().toArray(Resume[]::new);
+        return result;
     }
 
     @Override
     public int size() {
-        return 0;
+        return storage.size();
     }
 }

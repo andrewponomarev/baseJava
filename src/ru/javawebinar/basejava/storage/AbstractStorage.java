@@ -8,6 +8,8 @@ import static java.util.Objects.requireNonNull;
 
 public abstract class AbstractStorage implements Storage{
 
+    protected static final int STORAGE_LIMIT = 10000;
+
     protected abstract Object getKey(String uuid);
 
     protected abstract void doUpdate(Resume r, Object key);
