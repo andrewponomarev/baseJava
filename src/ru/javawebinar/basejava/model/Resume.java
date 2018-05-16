@@ -33,8 +33,12 @@ public class Resume implements Comparable<Resume> {
         return uuid;
     }
 
-    public Map<ContactType, String> getContacts() {
-        return contacts;
+    public String getContact(ContactType type) {
+        return contacts.get(type);
+    }
+
+    public Section getSection(SectionType type) {
+        return sections.get(type);
     }
 
     public Map<SectionType, Section> getSections() {
@@ -66,12 +70,77 @@ public class Resume implements Comparable<Resume> {
 
     @Override
     public String toString() {
-        return uuid + '(' + fullName + ')';
+        return "Resume{" +
+                "contacts=" + contacts +
+                ", sections=" + sections +
+                '}';
     }
 
     @Override
     public int compareTo(Resume o) {
         int cmp = fullName.compareTo(o.fullName);
         return cmp != 0 ? cmp : uuid.compareTo(o.uuid);
+    }
+
+    public static ResumeBuilder newBuilder(String fullName) {
+        return new Resume(fullName).new ResumeBuilder();
+    }
+
+    public class ResumeBuilder {
+
+        private ResumeBuilder() {
+
+        }
+
+        public ResumeBuilder phone(String s) {
+            Resume.this.contacts.put(ContactType.PHONE, s);
+            return this;
+        }
+
+        public ResumeBuilder mobile(String s) {
+            Resume.this.contacts.put(ContactType.MOBILE, s);
+            return this;
+        }
+
+        public ResumeBuilder homePhone(String s) {
+            Resume.this.contacts.put(ContactType.HOME_PHONE, s);
+            return this;
+        }
+
+        public ResumeBuilder skype(String s) {
+            Resume.this.contacts.put(ContactType.SKYPE, s);
+            return this;
+        }
+
+        public ResumeBuilder mail(String s) {
+            Resume.this.contacts.put(ContactType.MAIL, s);
+            return this;
+        }
+
+        public ResumeBuilder linkedIn(String s) {
+            Resume.this.contacts.put(ContactType.LINKEDIN, s);
+            return this;
+        }
+
+        public ResumeBuilder gitHub(String s) {
+            Resume.this.contacts.put(ContactType.GITHUB, s);
+            return this;
+        }
+
+        public ResumeBuilder stackOverflow(String s) {
+            Resume.this.contacts.put(ContactType.STATCKOVERFLOW, s);
+            return this;
+        }
+
+        public ResumeBuilder homePage(String s) {
+            Resume.this.contacts.put(ContactType.HOME_PAGE, s);
+            return this;
+        }
+
+
+        public Resume build() {
+            return Resume.this;
+        }
+
     }
 }
