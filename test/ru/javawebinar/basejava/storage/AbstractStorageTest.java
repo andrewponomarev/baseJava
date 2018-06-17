@@ -4,6 +4,7 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Resume;
 
 import java.util.List;
@@ -29,6 +30,31 @@ public abstract class AbstractStorageTest {
     private static final Resume RESUME_2 = new Resume(UUID_2, NAME_2);
     private static final Resume RESUME_3 = new Resume(UUID_3, NAME_3);
     private static final Resume RESUME_4 = new Resume(UUID_4, NAME_4);
+
+    private static final String MAIL_1 = "m1@mail.ru";
+    private static final String MAIL_2 = "m2@mail.ru";
+    private static final String MAIL_3 = "m3@mail.ru";
+    private static final String MAIL_4 = "m4@mail.ru";
+
+    private static final String PHONE_1 = "+71111";
+    private static final String PHONE_2 = "+72222";
+    private static final String PHONE_3 = "+73333";
+    private static final String PHONE_4 = "+74444";
+
+
+    static {
+        RESUME_1.addContact(ContactType.MAIL, MAIL_1);
+        RESUME_2.addContact(ContactType.MAIL, MAIL_2);
+        RESUME_3.addContact(ContactType.MAIL, MAIL_3);
+        RESUME_4.addContact(ContactType.MAIL, MAIL_4);
+
+        RESUME_1.addContact(ContactType.PHONE, PHONE_1);
+        RESUME_2.addContact(ContactType.PHONE, PHONE_2);
+        RESUME_3.addContact(ContactType.PHONE, PHONE_3);
+        RESUME_4.addContact(ContactType.PHONE, PHONE_4);
+    }
+
+
 
     public AbstractStorageTest() {
 
