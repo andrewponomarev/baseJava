@@ -89,7 +89,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     @Override
     protected void doDelete(File file) {
         if (!file.delete()) {
-            throw new StorageException("File delete error", file.getName());
+            throw new StorageException("File deleting error", file.getName());
         }
     }
 
