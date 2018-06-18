@@ -2,8 +2,6 @@ package ru.javawebinar.basejava;
 
 import ru.javawebinar.basejava.model.*;
 
-import java.time.LocalDate;
-
 public class MainModelTest {
 
     public static void main(String[] args) {
@@ -24,16 +22,16 @@ public class MainModelTest {
                 "Achievment1", "Achievment2", "Achievment3" ));
         r.addSection(SectionType.QUALIFICATIONS, new ListSection(
                 "Qualification1", "Qualification12", "Qualification13e23edwd" ));
-        r.addSection(SectionType.EXPERIENCE, new OrganizationSection(
-                new Organization("H", "www.h", LocalDate.now(),
-                        LocalDate.now(), "Title", "very important company"),
-                new Organization("U", "www.u", LocalDate.now(),
-                        LocalDate.now(), "AGA", "not very important company")
-        ));
-        r.addSection(SectionType.EDUCATION, new OrganizationSection((
-                new Organization("PTU", "www.ptu", LocalDate.now(), LocalDate.now(),
-                        "PTU" , "PTU")
-                )));
+//        r.addSection(SectionType.EXPERIENCE, new OrganizationSection(
+//                new Organization("H", "www.h", LocalDate.now(),
+//                        LocalDate.now(), "Title", "very important company"),
+//                new Organization("U", "www.u", LocalDate.now(),
+//                        LocalDate.now(), "AGA", "not very important company")
+//        ));
+//        r.addSection(SectionType.EDUCATION, new OrganizationSection((
+//                new Organization("PTU", "www.ptu", LocalDate.now(), LocalDate.now(),
+//                        "PTU" , "PTU")
+//                )));
 
         System.out.println(r);
     }

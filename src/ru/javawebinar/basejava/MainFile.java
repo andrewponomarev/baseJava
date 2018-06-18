@@ -37,10 +37,6 @@ public class MainFile {
             if (file.isFile()) {
                 System.out.println("file : " + file.getName());
             }
-            else if (file.isDirectory()) {
-                System.out.println("directory : " + file.getName());
-                printFilesRecursively(file);
-            }
         }
     }
 

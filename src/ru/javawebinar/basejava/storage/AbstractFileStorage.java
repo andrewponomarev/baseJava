@@ -6,7 +6,6 @@ import ru.javawebinar.basejava.model.Resume;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 import java.util.Objects;
 
@@ -30,7 +29,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public void clear() {
         File[] files = directory.listFiles();
         if (files == null)
-            return;
+            throw new StorageException("Critical error with reading from directory", "");
         for (File file : files) {
             doDelete(file);
         }
@@ -40,7 +39,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     public int size() {
         String[] fileList = directory.list();
         if (fileList == null)
-            return 0;
+            throw new StorageException("Critical error with reading from directory", "");
         return fileList.length;
     }
 
@@ -67,7 +66,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected void doSave(Resume r, File file) {
         try {
             file.createNewFile();
-            doWrite(r, file);
+            doUpdate(r, file);
         } catch (IOException e) {
             throw new StorageException("IO error", file.getName());
         }
@@ -97,7 +96,7 @@ public abstract class AbstractFileStorage extends AbstractStorage<File> {
     protected List<Resume> doCopyAll() {
         File[] files = directory.listFiles();
         if (files == null)
-            return Collections.emptyList();
+            throw new StorageException("Critical error with reading from directory", "");
         List<Resume> copyList = new ArrayList<>();
         for (File file : files) {
             copyList.add(doGet(file));

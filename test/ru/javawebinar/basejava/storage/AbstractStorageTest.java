@@ -4,9 +4,10 @@ import org.junit.Before;
 import org.junit.Test;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.ContactType;
-import ru.javawebinar.basejava.model.Resume;
+import ru.javawebinar.basejava.model.*;
 
+import java.time.LocalDate;
+import java.time.Month;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -41,6 +42,19 @@ public abstract class AbstractStorageTest {
     private static final String PHONE_3 = "+73333";
     private static final String PHONE_4 = "+74444";
 
+    private static final String[] ACHIEVMENTS = {"Achievment1", "Achievment2", "Achievment3"};
+    private static final String[] QUALIFICATIONS = {"Qualification1", "Qualification2", "Qualification3" };
+    private static final Organization ORGANIZATION_1 = new Organization("Google.com",
+            "http://google.com")
+            .withPosition(new Position(
+                    LocalDate.of(2005, Month.NOVEMBER, 21),
+                    LocalDate.of(2007, Month.APRIL, 22),
+                    "Стажер", "Плевал в потолок"))
+            .withPosition(new Position(
+                    LocalDate.of(2007, Month.APRIL, 29),
+                    LocalDate.now(),
+                    "Инженер", "Мою потолок"
+            ));
 
     static {
         RESUME_1.addContact(ContactType.MAIL, MAIL_1);
@@ -52,8 +66,24 @@ public abstract class AbstractStorageTest {
         RESUME_2.addContact(ContactType.PHONE, PHONE_2);
         RESUME_3.addContact(ContactType.PHONE, PHONE_3);
         RESUME_4.addContact(ContactType.PHONE, PHONE_4);
-    }
 
+        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 1"));
+        RESUME_2.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 2"));
+        RESUME_3.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 3"));
+        RESUME_4.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 4"));
+
+        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+        RESUME_2.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+        RESUME_2.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+        RESUME_3.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+        RESUME_3.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+        RESUME_4.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+        RESUME_4.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+
+        RESUME_1.addSection(SectionType.EDUCATION, new OrganizationSection(ORGANIZATION_1));
+        RESUME_2.addSection(SectionType.EXPERIENCE, new OrganizationSection(ORGANIZATION_1));
+    }
 
 
     public AbstractStorageTest() {
