@@ -6,14 +6,18 @@ import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.*;
 
+import java.io.File;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 
 public abstract class AbstractStorageTest {
+
+    protected static final File STORAGE_DIR = new File("C:\\projects\\storage");
 
     protected Storage storage;
 
@@ -46,11 +50,11 @@ public abstract class AbstractStorageTest {
     private static final String[] QUALIFICATIONS = {"Qualification1", "Qualification2", "Qualification3" };
     private static final Organization ORGANIZATION_1 = new Organization("Google.com",
             "http://google.com")
-            .withPosition(new Position(
+            .withPosition(new Organization.Position(
                     LocalDate.of(2005, Month.NOVEMBER, 21),
                     LocalDate.of(2007, Month.APRIL, 22),
                     "Стажер", "Плевал в потолок"))
-            .withPosition(new Position(
+            .withPosition(new Organization.Position(
                     LocalDate.of(2007, Month.APRIL, 29),
                     LocalDate.now(),
                     "Инженер", "Мою потолок"
@@ -116,10 +120,9 @@ public abstract class AbstractStorageTest {
 
     @Test
     public void update() throws Exception {
-        Resume r = new Resume(UUID_1, NAME_1);
-        assertFalse(r == storage.get(UUID_1));
-        storage.update(r);
-        assertTrue(r == storage.get(UUID_1));
+        Resume newResume = new Resume(UUID_1, "New Name");
+        storage.update(newResume);
+        assertTrue(newResume.equals(storage.get(UUID_1)));
     }
 
     @Test
