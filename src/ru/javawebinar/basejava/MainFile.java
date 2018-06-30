@@ -2,8 +2,13 @@ package ru.javawebinar.basejava;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.Collections;
 
 public class MainFile {
+
+    private static final String DIR = "./src/";
+
+    private static final String INDENT = "|--";
 
     public static void main(String[] args) {
         String filePath = ".\\.gitignore";
@@ -15,7 +20,7 @@ public class MainFile {
             throw new RuntimeException("Error", e);
         }
 
-        File dir = new File("./src/ru/javawebinar/basejava");
+        File dir = new File(DIR);
         System.out.println(dir.isDirectory());
         String[] list = dir.list();
         if (list != null) {
@@ -24,7 +29,9 @@ public class MainFile {
             }
         }
 
-        printFilesRecursively(dir);
+      //  printFilesRecursively(dir);
+        printDirectoriesResursively(dir);
+
     }
 
     private static void printFilesRecursively(File dir) {
@@ -39,6 +46,25 @@ public class MainFile {
             }
             else if (file.isDirectory()) {
                 printFilesRecursively(file);
+            }
+        }
+    }
+
+    private static void printDirectoriesResursively(File dir) {
+        printDirectoriesResursively(dir , 0);
+    }
+
+    private static void printDirectoriesResursively(File dir, int level) {
+        File[] files = dir.listFiles();
+
+        if (files == null)
+            return;
+
+        for (File file : files) {
+            if (file.isDirectory()) {
+                String indent = String.join("", Collections.nCopies(level, INDENT));
+                System.out.println(indent + file.getName());
+                printDirectoriesResursively(file, level+1);
             }
         }
     }
