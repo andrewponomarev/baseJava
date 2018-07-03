@@ -2,7 +2,6 @@ package ru.javawebinar.basejava;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collections;
 
 public class MainFile {
 
@@ -51,10 +50,10 @@ public class MainFile {
     }
 
     private static void printDirectoriesResursively(File dir) {
-        printDirectoriesResursively(dir , 0);
+        printDirectoriesResursively(dir , "");
     }
 
-    private static void printDirectoriesResursively(File dir, int level) {
+    private static void printDirectoriesResursively(File dir, String indent) {
         File[] files = dir.listFiles();
 
         if (files == null)
@@ -62,9 +61,8 @@ public class MainFile {
 
         for (File file : files) {
             if (file.isDirectory()) {
-                String indent = String.join("", Collections.nCopies(level, INDENT));
                 System.out.println(indent + file.getName());
-                printDirectoriesResursively(file, level+1);
+                printDirectoriesResursively(file, indent + INDENT);
             }
         }
     }
