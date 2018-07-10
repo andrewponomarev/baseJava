@@ -13,6 +13,11 @@ public class ListSection extends Section {
     public ListSection() {
     }
 
+    public ListSection(List<String> items) {
+        Objects.requireNonNull(items, "items must not be null");
+        this.items = items;
+    }
+
     public ListSection(String... items) {
         Objects.requireNonNull(items, "items must not be null");
         this.items = Arrays.asList(items);

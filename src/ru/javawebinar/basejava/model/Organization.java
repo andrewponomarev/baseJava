@@ -22,14 +22,34 @@ public class Organization implements Serializable {
 
     private Link homePage;
 
-    private List<Position> positions;
+    private List<Position> positions = new ArrayList<>();
 
     public Organization() {
     }
 
-    public Organization(String name, String url, Position... positions) {
+    public Organization(String name, String url, List<Position> positions) {
         this.homePage = new Link(name, url);
-        this.positions = new ArrayList<>(Arrays.asList(positions));
+        this.positions = positions;
+    }
+
+    public Organization(String name, String url, Position... positions) {
+        this(name, url, new ArrayList<>(Arrays.asList(positions)));
+    }
+
+    public Link getHomePage() {
+        return homePage;
+    }
+
+    public void setHomePage(Link homePage) {
+        this.homePage = homePage;
+    }
+
+    public List<Position> getPositions() {
+        return positions;
+    }
+
+    public void setPositions(List<Position> positions) {
+        this.positions = positions;
     }
 
     @Override
@@ -39,8 +59,8 @@ public class Organization implements Serializable {
 
         Organization that = (Organization) o;
 
-        if (!homePage.equals(that.homePage)) return false;
-        return positions.equals(that.positions);
+        if (!Objects.equals(homePage,(that.homePage))) return false;
+        return Objects.equals(positions,that.positions);
 
     }
 
