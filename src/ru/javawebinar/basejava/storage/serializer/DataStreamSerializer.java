@@ -20,13 +20,7 @@ public class DataStreamSerializer implements Serializer {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
 
-            Map<ContactType, String> contacts = r.getContacts();
-            dos.writeInt(contacts.size());
-            for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-                dos.writeUTF(entry.getKey().name());
-                dos.writeUTF(entry.getValue());
-            }
-            // TODO implements sections
+            writeContacts(r.getContacts(), dos);
 
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
@@ -51,29 +45,38 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
-    private <T> void writeList(List<T> stringList, DataOutputStream dos, DSWriter<T> f) throws IOException {
+    private <T> void writeList(List<T> stringList, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
         dos.writeInt(stringList.size());
         for (T o : stringList) {
-            f.write(o);
+            f.write(o, dos);
+        }
+    }
+
+    private void writeString(String s, DataOutputStream dos) throws IOException {
+        dos.writeUTF(s);
+    }
+
+    private void writeContacts(Map<ContactType, String> contacts, DataOutputStream dos) throws IOException {
+        dos.writeInt(contacts.size());
+        for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
+            dos.writeUTF(entry.getKey().name());
+            dos.writeUTF(entry.getValue());
         }
     }
 
     private void writeTextSection(TextSection section, DataOutputStream dos) throws IOException {
         String content = section.getContent();
-        dos.writeUTF(content);
+        writeString(content, dos);
     }
 
     private void writeListSection(ListSection section, DataOutputStream dos) throws IOException {
         List<String> sectionItems = section.getItems();
-        writeList(sectionItems, dos, dos :: writeUTF);
+        writeList(sectionItems, dos, this::writeString);
     }
 
     private void writeOrganizationSection(OrganizationSection section, DataOutputStream dos) throws IOException {
         List<Organization> organizationList = section.getOrganizations();
-        dos.writeInt(organizationList.size());
-        for (Organization org : organizationList) {
-            writeOrganization(org, dos);
-        }
+        writeList(organizationList, dos, this::writeOrganization);
     }
 
     private void writeOrganization(Organization org, DataOutputStream dos) throws IOException {
@@ -124,6 +127,19 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
+    private TextSection readTextSection(DataInputStream dis) throws IOException {
+        return new TextSection(dis.readUTF());
+    }
+
+    private ListSection readListSection(DataInputStream dis) throws IOException{
+        int size = dis.readInt();
+        List<String> stringList = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            stringList.add(dis.readUTF());
+        }
+        return new ListSection(stringList);
+    }
+
     private OrganizationSection readOrganizationSection(DataInputStream dis) throws IOException {
         OrganizationSection section = new OrganizationSection();
         int size = dis.readInt();
@@ -150,21 +166,9 @@ public class DataStreamSerializer implements Serializer {
         return section;
     }
 
-    private ListSection readListSection(DataInputStream dis) throws IOException{
-        int size = dis.readInt();
-        List<String> stringList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            stringList.add(dis.readUTF());
-        }
-        return new ListSection(stringList);
-    }
-
-    private TextSection readTextSection(DataInputStream dis) throws IOException {
-        return new TextSection(dis.readUTF());
-    }
-
     @FunctionalInterface
-    private interface DSWriter<T> {
-        void write(T obj) throws IOException;
+    private interface DataStreamWriter<T> {
+        void write(T obj, DataOutputStream dos) throws IOException;
     }
+
 }
