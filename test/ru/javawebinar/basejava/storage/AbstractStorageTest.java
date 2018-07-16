@@ -50,12 +50,13 @@ public abstract class AbstractStorageTest {
     private static final String[] ACHIEVMENTS = {"Achievment1", "Achievment2", "Achievment3"};
     private static final String[] QUALIFICATIONS = {"Qualification1", "Qualification2", "Qualification3" };
     private static final Organization ORGANIZATION_1 = new Organization(
-            "Google.com",
-            "http://google.com")
+            "Google.com")
+    //        "http://google.com")
             .withPosition(new Organization.Position(
                     LocalDate.of(2005, Month.NOVEMBER, 21),
                     LocalDate.of(2007, Month.APRIL, 22),
-                    "Стажер", "Плевал в потолок"))
+                    "Стажер"))
+    //, "Плевал в потолок"))
             .withPosition(new Organization.Position(
                     LocalDate.of(2007, Month.APRIL, 29),
                     LocalDate.now(),

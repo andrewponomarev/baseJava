@@ -27,6 +27,11 @@ public class Organization implements Serializable {
     public Organization() {
     }
 
+    public Organization(String name) {
+        this.homePage = new Link(name, null);
+    }
+
+
     public Organization(String name, String url, List<Position> positions) {
         this.homePage = new Link(name, url);
         this.positions = positions;
@@ -115,6 +120,10 @@ public class Organization implements Serializable {
             this.endDate = endDate;
             this.title = title;
             this.description = description;
+        }
+
+        public Position(LocalDate startDate, LocalDate endDate, String title) {
+            this(startDate, endDate, title, null);
         }
 
         public LocalDate getStartDate() {

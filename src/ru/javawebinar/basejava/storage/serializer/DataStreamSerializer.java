@@ -81,15 +81,22 @@ public class DataStreamSerializer implements Serializer {
 
     private void writeOrganization(Organization org, DataOutputStream dos) throws IOException {
         dos.writeUTF(org.getHomePage().getName());
-        dos.writeUTF(org.getHomePage().getUrl());
+        writeStringIfNull(org.getHomePage().getUrl(), dos);
         List<Organization.Position> positions = org.getPositions();
         dos.writeInt(positions.size());
         for (Organization.Position pos : positions) {
             dos.writeUTF(pos.getStartDate().format(DTF));
             dos.writeUTF(pos.getEndDate().format(DTF));
             dos.writeUTF(pos.getTitle());
-            dos.writeUTF(pos.getDescription());
+            writeStringIfNull(pos.getDescription(), dos);
         }
+    }
+
+    private void writeStringIfNull(String s, DataOutputStream dos) throws IOException {
+        if (s == null) {
+            writeString("null", dos);
+        }
+        else writeString(s, dos);
     }
 
 
@@ -146,7 +153,7 @@ public class DataStreamSerializer implements Serializer {
         List<Organization> organizationList = new ArrayList<>();
         for (int i = 0; i < size; i++) {
             String name = dis.readUTF();
-            String url = dis.readUTF();
+            String url = readStringIfNull(dis);
             List<Organization.Position> positionList = new ArrayList<>();
             int size2 = dis.readInt();
             for (int j = 0; j < size2; j++) {
@@ -154,7 +161,7 @@ public class DataStreamSerializer implements Serializer {
                         LocalDate.parse(dis.readUTF(), DTF),
                         LocalDate.parse(dis.readUTF(), DTF),
                         dis.readUTF(),
-                        dis.readUTF()
+                        readStringIfNull(dis)
                 );
                 positionList.add(pos);
             }
@@ -164,6 +171,15 @@ public class DataStreamSerializer implements Serializer {
         section.setOrganizations(organizationList);
 
         return section;
+    }
+
+    private String readStringIfNull(DataInputStream dis) throws IOException {
+        String s = dis.readUTF();
+        if (s.equals("null")) {
+            return null;
+        } else {
+            return s;
+        }
     }
 
     @FunctionalInterface
