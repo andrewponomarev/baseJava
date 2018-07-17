@@ -6,6 +6,7 @@ import java.io.*;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
 
@@ -45,11 +46,16 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
-    private <T> void writeList(List<T> stringList, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
-        dos.writeInt(stringList.size());
-        for (T o : stringList) {
+    private <T> void writeCollection(Collection<T> list, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
+        dos.writeInt(list.size());
+        for (T o : list) {
             f.write(o, dos);
         }
+    }
+
+    private <T> void writeEntry(Map.Entry<ContactType, String> entry, DataOutputStream dos) throws IOException {
+        dos.writeUTF(entry.getKey().name());
+        dos.writeUTF(entry.getValue());
     }
 
     private void writeString(String s, DataOutputStream dos) throws IOException {
@@ -57,11 +63,7 @@ public class DataStreamSerializer implements Serializer {
     }
 
     private void writeContacts(Map<ContactType, String> contacts, DataOutputStream dos) throws IOException {
-        dos.writeInt(contacts.size());
-        for (Map.Entry<ContactType, String> entry : contacts.entrySet()) {
-            dos.writeUTF(entry.getKey().name());
-            dos.writeUTF(entry.getValue());
-        }
+        writeCollection(contacts.entrySet(), dos, this::writeEntry);
     }
 
     private void writeTextSection(TextSection section, DataOutputStream dos) throws IOException {
@@ -71,30 +73,31 @@ public class DataStreamSerializer implements Serializer {
 
     private void writeListSection(ListSection section, DataOutputStream dos) throws IOException {
         List<String> sectionItems = section.getItems();
-        writeList(sectionItems, dos, this::writeString);
+        writeCollection(sectionItems, dos, this::writeString);
     }
 
     private void writeOrganizationSection(OrganizationSection section, DataOutputStream dos) throws IOException {
         List<Organization> organizationList = section.getOrganizations();
-        writeList(organizationList, dos, this::writeOrganization);
+        writeCollection(organizationList, dos, this::writeOrganization);
     }
 
     private void writeOrganization(Organization org, DataOutputStream dos) throws IOException {
         dos.writeUTF(org.getHomePage().getName());
         writeStringIfNull(org.getHomePage().getUrl(), dos);
         List<Organization.Position> positions = org.getPositions();
-        dos.writeInt(positions.size());
-        for (Organization.Position pos : positions) {
-            dos.writeUTF(pos.getStartDate().format(DTF));
-            dos.writeUTF(pos.getEndDate().format(DTF));
-            dos.writeUTF(pos.getTitle());
-            writeStringIfNull(pos.getDescription(), dos);
-        }
+        writeCollection(positions, dos, this::writePosition);
+    }
+
+    private void writePosition(Organization.Position pos, DataOutputStream dos) throws IOException {
+        dos.writeUTF(pos.getStartDate().format(DTF));
+        dos.writeUTF(pos.getEndDate().format(DTF));
+        dos.writeUTF(pos.getTitle());
+        writeStringIfNull(pos.getDescription(), dos);
     }
 
     private void writeStringIfNull(String s, DataOutputStream dos) throws IOException {
         if (s == null) {
-            writeString("null", dos);
+            writeString("", dos);
         }
         else writeString(s, dos);
     }
@@ -175,7 +178,7 @@ public class DataStreamSerializer implements Serializer {
 
     private String readStringIfNull(DataInputStream dis) throws IOException {
         String s = dis.readUTF();
-        if (s.equals("null")) {
+        if (s.equals("")) {
             return null;
         } else {
             return s;
