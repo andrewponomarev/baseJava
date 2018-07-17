@@ -46,9 +46,9 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
-    private <T> void writeCollection(Collection<T> list, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
-        dos.writeInt(list.size());
-        for (T o : list) {
+    private <T> void writeCollection(Collection<T> col, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
+        dos.writeInt(col.size());
+        for (T o : col) {
             f.write(o, dos);
         }
     }
@@ -137,42 +137,40 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
+    private String readString(DataInputStream dis) throws IOException {
+        return dis.readUTF();
+    }
+
+    private Organization readOrganization(DataInputStream dis) throws IOException {
+        String name = dis.readUTF();
+        String url = readStringIfNull(dis);
+        List<Organization.Position> positionList = readList(dis, this::readPosition);
+        Organization org = new Organization(name, url, positionList);
+        return org;
+    }
+
+    private Organization.Position readPosition(DataInputStream dis) throws IOException {
+        Organization.Position pos = new Organization.Position(
+                LocalDate.parse(dis.readUTF(), DTF),
+                LocalDate.parse(dis.readUTF(), DTF),
+                dis.readUTF(),
+                readStringIfNull(dis)
+        );
+        return pos;
+    }
+
     private TextSection readTextSection(DataInputStream dis) throws IOException {
-        return new TextSection(dis.readUTF());
+        return new TextSection(readString(dis));
     }
 
     private ListSection readListSection(DataInputStream dis) throws IOException{
-        int size = dis.readInt();
-        List<String> stringList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            stringList.add(dis.readUTF());
-        }
+        List<String> stringList = readList(dis, this::readString);
         return new ListSection(stringList);
     }
 
     private OrganizationSection readOrganizationSection(DataInputStream dis) throws IOException {
         OrganizationSection section = new OrganizationSection();
-        int size = dis.readInt();
-        List<Organization> organizationList = new ArrayList<>();
-        for (int i = 0; i < size; i++) {
-            String name = dis.readUTF();
-            String url = readStringIfNull(dis);
-            List<Organization.Position> positionList = new ArrayList<>();
-            int size2 = dis.readInt();
-            for (int j = 0; j < size2; j++) {
-                Organization.Position pos = new Organization.Position(
-                        LocalDate.parse(dis.readUTF(), DTF),
-                        LocalDate.parse(dis.readUTF(), DTF),
-                        dis.readUTF(),
-                        readStringIfNull(dis)
-                );
-                positionList.add(pos);
-            }
-            Organization org = new Organization(name, url, positionList);
-            organizationList.add(org);
-        }
-        section.setOrganizations(organizationList);
-
+        section.setOrganizations(readList(dis, this::readOrganization));
         return section;
     }
 
@@ -185,9 +183,23 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
+    private <T> List<T> readList(DataInputStream dis, DataStreamReader<T> f) throws IOException {
+        int size = dis.readInt();
+        List<T> list = new ArrayList<>();
+        for (int i = 0; i < size; i++) {
+            list.add(f.read(dis));
+        }
+        return list;
+    }
+
     @FunctionalInterface
     private interface DataStreamWriter<T> {
         void write(T obj, DataOutputStream dos) throws IOException;
+    }
+
+    @FunctionalInterface
+    private interface DataStreamReader<T> {
+        T read(DataInputStream dis) throws IOException;
     }
 
 }
