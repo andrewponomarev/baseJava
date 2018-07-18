@@ -21,7 +21,10 @@ public class DataStreamSerializer implements Serializer {
             dos.writeUTF(r.getUuid());
             dos.writeUTF(r.getFullName());
 
-            writeContacts(r.getContacts(), dos);
+            writeCollection(r.getContacts().entrySet(), dos, entry  -> {
+                dos.writeUTF(entry.getKey().name());
+                dos.writeUTF(entry.getValue());
+            });
 
             Map<SectionType, Section> sections = r.getSections();
             dos.writeInt(sections.size());
@@ -31,11 +34,11 @@ public class DataStreamSerializer implements Serializer {
                 switch (entry.getKey()) {
                     case PERSONAL:
                     case OBJECTIVE:
-                        writeTextSection((TextSection) section, dos);
+                        dos.writeUTF(((TextSection) section).getContent());
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        writeListSection((ListSection) section, dos);
+                        writeCollection(((ListSection) section).getItems(), dos, dos::writeUTF);
                         break;
                     case EDUCATION:
                     case EXPERIENCE:
@@ -49,57 +52,28 @@ public class DataStreamSerializer implements Serializer {
     private <T> void writeCollection(Collection<T> col, DataOutputStream dos, DataStreamWriter<T> f) throws IOException {
         dos.writeInt(col.size());
         for (T o : col) {
-            f.write(o, dos);
+            f.write(o);
         }
-    }
-
-    private <T> void writeEntry(Map.Entry<ContactType, String> entry, DataOutputStream dos) throws IOException {
-        dos.writeUTF(entry.getKey().name());
-        dos.writeUTF(entry.getValue());
-    }
-
-    private void writeString(String s, DataOutputStream dos) throws IOException {
-        dos.writeUTF(s);
-    }
-
-    private void writeContacts(Map<ContactType, String> contacts, DataOutputStream dos) throws IOException {
-        writeCollection(contacts.entrySet(), dos, this::writeEntry);
-    }
-
-    private void writeTextSection(TextSection section, DataOutputStream dos) throws IOException {
-        String content = section.getContent();
-        writeString(content, dos);
-    }
-
-    private void writeListSection(ListSection section, DataOutputStream dos) throws IOException {
-        List<String> sectionItems = section.getItems();
-        writeCollection(sectionItems, dos, this::writeString);
     }
 
     private void writeOrganizationSection(OrganizationSection section, DataOutputStream dos) throws IOException {
         List<Organization> organizationList = section.getOrganizations();
-        writeCollection(organizationList, dos, this::writeOrganization);
+        writeCollection(organizationList, dos, org -> {
+            dos.writeUTF(org.getHomePage().getName());
+            writeStringIfNull(org.getHomePage().getUrl(), dos);
+            List<Organization.Position> positions = org.getPositions();
+            writeCollection(positions, dos, pos -> {
+                dos.writeUTF(pos.getStartDate().format(DTF));
+                dos.writeUTF(pos.getEndDate().format(DTF));
+                dos.writeUTF(pos.getTitle());
+                writeStringIfNull(pos.getDescription(), dos);
+            });
+        });
     }
 
-    private void writeOrganization(Organization org, DataOutputStream dos) throws IOException {
-        dos.writeUTF(org.getHomePage().getName());
-        writeStringIfNull(org.getHomePage().getUrl(), dos);
-        List<Organization.Position> positions = org.getPositions();
-        writeCollection(positions, dos, this::writePosition);
-    }
-
-    private void writePosition(Organization.Position pos, DataOutputStream dos) throws IOException {
-        dos.writeUTF(pos.getStartDate().format(DTF));
-        dos.writeUTF(pos.getEndDate().format(DTF));
-        dos.writeUTF(pos.getTitle());
-        writeStringIfNull(pos.getDescription(), dos);
-    }
 
     private void writeStringIfNull(String s, DataOutputStream dos) throws IOException {
-        if (s == null) {
-            writeString("", dos);
-        }
-        else writeString(s, dos);
+        dos.writeUTF(s == null ? "" : s);
     }
 
 
@@ -120,11 +94,11 @@ public class DataStreamSerializer implements Serializer {
                 switch (sectionType) {
                     case PERSONAL:
                     case OBJECTIVE:
-                        resume.addSection(sectionType ,readTextSection(dis));
+                        resume.addSection(sectionType , new TextSection(dis.readUTF()));
                         break;
                     case ACHIEVEMENT:
                     case QUALIFICATIONS:
-                        resume.addSection(sectionType ,readListSection(dis));
+                        resume.addSection(sectionType , new ListSection(readList(dis, dis::readUTF)));
                         break;
                     case EDUCATION:
                     case EXPERIENCE:
@@ -137,69 +111,49 @@ public class DataStreamSerializer implements Serializer {
         }
     }
 
-    private String readString(DataInputStream dis) throws IOException {
-        return dis.readUTF();
-    }
-
-    private Organization readOrganization(DataInputStream dis) throws IOException {
-        String name = dis.readUTF();
-        String url = readStringIfNull(dis);
-        List<Organization.Position> positionList = readList(dis, this::readPosition);
-        Organization org = new Organization(name, url, positionList);
-        return org;
-    }
-
-    private Organization.Position readPosition(DataInputStream dis) throws IOException {
-        Organization.Position pos = new Organization.Position(
-                LocalDate.parse(dis.readUTF(), DTF),
-                LocalDate.parse(dis.readUTF(), DTF),
-                dis.readUTF(),
-                readStringIfNull(dis)
-        );
-        return pos;
-    }
-
-    private TextSection readTextSection(DataInputStream dis) throws IOException {
-        return new TextSection(readString(dis));
-    }
-
-    private ListSection readListSection(DataInputStream dis) throws IOException{
-        List<String> stringList = readList(dis, this::readString);
-        return new ListSection(stringList);
-    }
-
     private OrganizationSection readOrganizationSection(DataInputStream dis) throws IOException {
         OrganizationSection section = new OrganizationSection();
-        section.setOrganizations(readList(dis, this::readOrganization));
+        section.setOrganizations(readList(dis, () ->{
+            String name = dis.readUTF();
+            String url = readStringIfNull(dis);
+            List<Organization.Position> positionList = readList(dis, () -> {
+                Organization.Position pos = new Organization.Position(
+                        LocalDate.parse(dis.readUTF(), DTF),
+                        LocalDate.parse(dis.readUTF(), DTF),
+                        dis.readUTF(),
+                        readStringIfNull(dis)
+                );
+                return pos;
+            });
+            Organization org = new Organization(name, url, positionList);
+            return org;
+        }));
         return section;
     }
 
+
     private String readStringIfNull(DataInputStream dis) throws IOException {
         String s = dis.readUTF();
-        if (s.equals("")) {
-            return null;
-        } else {
-            return s;
-        }
+        return s.equals("") ? null : s;
     }
 
     private <T> List<T> readList(DataInputStream dis, DataStreamReader<T> f) throws IOException {
         int size = dis.readInt();
         List<T> list = new ArrayList<>();
         for (int i = 0; i < size; i++) {
-            list.add(f.read(dis));
+            list.add(f.read());
         }
         return list;
     }
 
     @FunctionalInterface
     private interface DataStreamWriter<T> {
-        void write(T obj, DataOutputStream dos) throws IOException;
+        void write(T obj) throws IOException;
     }
 
     @FunctionalInterface
     private interface DataStreamReader<T> {
-        T read(DataInputStream dis) throws IOException;
+        T read() throws IOException;
     }
 
 }
