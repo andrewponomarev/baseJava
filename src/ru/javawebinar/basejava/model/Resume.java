@@ -9,6 +9,8 @@ import java.util.Map;
 import java.util.Objects;
 import java.util.UUID;
 
+import static ru.javawebinar.basejava.model.SectionType.*;
+
 /**
  * com.urise.webapp.ru.javawebinar.basejava.model.ru.javawebinar.basejava.model.Resume class
  */
@@ -25,6 +27,18 @@ public class Resume implements Comparable<Resume>, Serializable {
 
     private final Map<ContactType, String> contacts = new EnumMap<>(ContactType.class);
     private final Map<SectionType, Section> sections = new EnumMap<>(SectionType.class);
+
+    public static final Map<SectionType, Class> sectionTypeClassMap =
+            new EnumMap<SectionType, Class>(SectionType.class);
+
+    static {
+        sectionTypeClassMap.put(PERSONAL, TextSection.class);
+        sectionTypeClassMap.put(OBJECTIVE, TextSection.class);
+        sectionTypeClassMap.put(ACHIEVEMENT, ListSection.class);
+        sectionTypeClassMap.put(QUALIFICATIONS, ListSection.class);
+        sectionTypeClassMap.put(EDUCATION, OrganizationSection.class);
+        sectionTypeClassMap.put(EXPERIENCE, OrganizationSection.class);
+    }
 
     public Resume() {
     }
