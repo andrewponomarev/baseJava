@@ -117,16 +117,14 @@ public class DataStreamSerializer implements Serializer {
             String name = dis.readUTF();
             String url = readStringIfNull(dis);
             List<Organization.Position> positionList = readList(dis, () -> {
-                Organization.Position pos = new Organization.Position(
+                return new Organization.Position(
                         LocalDate.parse(dis.readUTF(), DTF),
                         LocalDate.parse(dis.readUTF(), DTF),
                         dis.readUTF(),
                         readStringIfNull(dis)
                 );
-                return pos;
             });
-            Organization org = new Organization(name, url, positionList);
-            return org;
+            return new Organization(name, url, positionList);
         }));
         return section;
     }
