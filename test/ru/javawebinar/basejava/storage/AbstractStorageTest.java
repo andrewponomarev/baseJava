@@ -2,9 +2,11 @@ package ru.javawebinar.basejava.storage;
 
 import org.junit.Before;
 import org.junit.Test;
+import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
-import ru.javawebinar.basejava.model.*;
+import ru.javawebinar.basejava.model.Organization;
+import ru.javawebinar.basejava.model.Resume;
 
 import java.io.File;
 import java.time.LocalDate;
@@ -17,9 +19,7 @@ import static org.junit.Assert.assertTrue;
 
 public abstract class AbstractStorageTest {
 
-    protected static final String SORAGE_DIR_STRING = "/Users/ponomarevandrew/My projects/JavaOps/basejava/storage";
-    protected static final File STORAGE_DIR = new File("/Users/ponomarevandrew/My projects/JavaOps/basejava/storage");
-
+    protected static final File STORAGE_DIR = Config.get().getStorageDir();
     protected Storage storage;
 
     private static final String UUID_1 = "uuid1";
@@ -64,32 +64,32 @@ public abstract class AbstractStorageTest {
             ));
 
     static {
-        RESUME_1.addContact(ContactType.MAIL, MAIL_1);
-        RESUME_2.addContact(ContactType.MAIL, MAIL_2);
-        RESUME_3.addContact(ContactType.MAIL, MAIL_3);
-        RESUME_4.addContact(ContactType.MAIL, MAIL_4);
-
-        RESUME_1.addContact(ContactType.PHONE, PHONE_1);
-        RESUME_2.addContact(ContactType.PHONE, PHONE_2);
-        RESUME_3.addContact(ContactType.PHONE, PHONE_3);
-        RESUME_4.addContact(ContactType.PHONE, PHONE_4);
-
-        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 1"));
-        RESUME_2.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 2"));
-        RESUME_3.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 3"));
-        RESUME_4.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 4"));
-
-        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
-        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
-        RESUME_2.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
-        RESUME_2.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
-        RESUME_3.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
-        RESUME_3.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
-        RESUME_4.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
-        RESUME_4.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
-
-        RESUME_1.addSection(SectionType.EDUCATION, new OrganizationSection(ORGANIZATION_1));
-        RESUME_2.addSection(SectionType.EXPERIENCE, new OrganizationSection(ORGANIZATION_1));
+//        RESUME_1.addContact(ContactType.MAIL, MAIL_1);
+//        RESUME_2.addContact(ContactType.MAIL, MAIL_2);
+//        RESUME_3.addContact(ContactType.MAIL, MAIL_3);
+//        RESUME_4.addContact(ContactType.MAIL, MAIL_4);
+//
+//        RESUME_1.addContact(ContactType.PHONE, PHONE_1);
+//        RESUME_2.addContact(ContactType.PHONE, PHONE_2);
+//        RESUME_3.addContact(ContactType.PHONE, PHONE_3);
+//        RESUME_4.addContact(ContactType.PHONE, PHONE_4);
+//
+//        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 1"));
+//        RESUME_2.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 2"));
+//        RESUME_3.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 3"));
+//        RESUME_4.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 4"));
+//
+//        RESUME_1.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+//        RESUME_1.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+//        RESUME_2.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+//        RESUME_2.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+//        RESUME_3.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+//        RESUME_3.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+//        RESUME_4.addSection(SectionType.ACHIEVEMENT, new ListSection(ACHIEVMENTS));
+//        RESUME_4.addSection(SectionType.QUALIFICATIONS, new ListSection(QUALIFICATIONS));
+//
+//        RESUME_1.addSection(SectionType.EDUCATION, new OrganizationSection(ORGANIZATION_1));
+//        RESUME_2.addSection(SectionType.EXPERIENCE, new OrganizationSection(ORGANIZATION_1));
     }
 
 

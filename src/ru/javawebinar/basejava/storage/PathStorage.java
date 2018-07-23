@@ -6,6 +6,7 @@ import ru.javawebinar.basejava.storage.serializer.Serializer;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
@@ -21,7 +22,7 @@ public class PathStorage extends AbstractStorage<Path> {
 
     private Serializer serializer;
 
-    protected PathStorage(String dir, Serializer serializer) {
+    protected PathStorage(File dir, Serializer serializer) {
         directory = Paths.get(dir);
         Objects.requireNonNull(directory, "directory must not be null");
         Objects.requireNonNull(serializer, "serializer must not be null");
