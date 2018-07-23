@@ -4,29 +4,35 @@ public class MainDeadLock {
 
     static class T implements Runnable {
 
-        private Object lock;
+        private Object lock_1;
+
+        private Object lock_2;
 
         public T() {
         }
 
-        public void setLock(Object lock) {
-            this.lock = lock;
+        public void setLock_1(Object lock) {
+            this.lock_1 = lock;
+        }
+
+        public void setLock_2(Object lock) {
+            this.lock_2 = lock;
         }
 
 
-        private synchronized void method() {
-            try {
-                System.out.println(Thread.currentThread().getName() + "," + this + " before wait()");
-                wait();
-                System.out.println(Thread.currentThread().getName() + "," + this + " after wait()");
-
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-            synchronized (lock) {
-                System.out.println(Thread.currentThread().getName() + "," + this + " before notify()");
-                lock.notifyAll();
-                System.out.println(Thread.currentThread().getName() + "," + this + " after notify()");
+        private void method() {
+            System.out.println("Waiting for " + lock_1);
+            synchronized (lock_1) {
+                System.out.println(lock_1 + " is holded");
+                try {
+                    Thread.sleep(100);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                System.out.println("Waiting for " + lock_2);
+                synchronized (lock_2) {
+                    System.out.println(lock_2 + " is holded");
+                }
             }
         }
 
@@ -40,8 +46,12 @@ public class MainDeadLock {
     public static void main(String[] args) {
         T A = new T();
         T B = new T();
-        A.setLock(B);
-        B.setLock(A);
+        Object lock_1 = new Object();
+        Object lock_2 = new Object();
+        A.setLock_1(lock_1);
+        A.setLock_2(lock_2);
+        B.setLock_1(lock_2);
+        B.setLock_2(lock_1);
 
         Thread t1 = new Thread(A);
         Thread t2 = new Thread(B);
