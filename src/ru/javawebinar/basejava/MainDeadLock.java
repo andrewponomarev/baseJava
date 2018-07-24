@@ -4,21 +4,14 @@ public class MainDeadLock {
 
     static class T implements Runnable {
 
-        private Object lock_1;
+        private final Object lock_1;
 
-        private Object lock_2;
+        private final Object lock_2;
 
-        public T() {
+        public T(Object lock_1, Object lock_2) {
+            this.lock_1 = lock_1;
+            this.lock_2 = lock_2;
         }
-
-        public void setLock_1(Object lock) {
-            this.lock_1 = lock;
-        }
-
-        public void setLock_2(Object lock) {
-            this.lock_2 = lock;
-        }
-
 
         private void method() {
             System.out.println("Waiting for " + lock_1);
@@ -44,15 +37,10 @@ public class MainDeadLock {
     }
 
     public static void main(String[] args) {
-        T A = new T();
-        T B = new T();
         Object lock_1 = new Object();
         Object lock_2 = new Object();
-        A.setLock_1(lock_1);
-        A.setLock_2(lock_2);
-        B.setLock_1(lock_2);
-        B.setLock_2(lock_1);
-
+        T A = new T(lock_1, lock_2);
+        T B = new T(lock_2, lock_1);
         Thread t1 = new Thread(A);
         Thread t2 = new Thread(B);
 
