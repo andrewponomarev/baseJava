@@ -2,7 +2,6 @@ package ru.javawebinar.basejava.storage;
 
 import ru.javawebinar.basejava.exception.NotExistStorageException;
 import ru.javawebinar.basejava.model.Resume;
-import ru.javawebinar.basejava.sql.ConnectionFactory;
 import ru.javawebinar.basejava.sql.SqlHelper;
 
 import java.sql.DriverManager;
@@ -14,10 +13,7 @@ public class SqlStorage implements Storage {
 
     public final SqlHelper sqlHelper;
 
-    public final ConnectionFactory connectionFactory;
-
     public SqlStorage(String dbUrl, String dbUser, String dbPassword) {
-        connectionFactory = () -> DriverManager.getConnection(dbUrl, dbUser, dbPassword);
         this.sqlHelper = new SqlHelper(() -> DriverManager.getConnection(dbUrl, dbUser, dbPassword));
     }
 
@@ -69,7 +65,10 @@ public class SqlStorage implements Storage {
     public void delete(String uuid) {
         sqlHelper.execute("DELETE FROM resume WHERE uuid=?", (ps) -> {
             ps.setString(1, uuid);
-            ps.execute();
+            int rs = ps.executeUpdate();
+            if (rs == 0) {
+                throw new NotExistStorageException(uuid);
+            }
             return null;
         });
     }
