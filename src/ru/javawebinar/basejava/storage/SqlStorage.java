@@ -39,9 +39,7 @@ public class SqlStorage implements Storage {
                     if (!rs.next()) {
                         throw new NotExistStorageException(uuid);
                     }
-                    Resume r = createResumeFromRs(rs, uuid);
-
-                    return r;
+                    return createResumeFromRs(rs, uuid);
                 });
     }
 
@@ -56,7 +54,7 @@ public class SqlStorage implements Storage {
                     throw new NotExistStorageException(r.getUuid());
                 }
             }
-            deleteContacts(r.getUuid());
+            deleteContacts(conn, r.getUuid());
             insertContacts(conn, r);
             return null;
 
@@ -86,7 +84,6 @@ public class SqlStorage implements Storage {
                 if (rs == 0) {
                     throw new NotExistStorageException(uuid);
                 }
-                deleteContacts(uuid);
                 return null;
             }
         });
@@ -133,7 +130,7 @@ public class SqlStorage implements Storage {
         }
     }
 
-    private void deleteContacts(String uuid) throws SQLException {
+    private void deleteContacts(Connection conn, String uuid) throws SQLException {
         sqlHelper.execute("DELETE FROM contact WHERE resume_uuid=?", (ps) -> {
             ps.setString(1, uuid);
             int rs = ps.executeUpdate();
