@@ -131,14 +131,14 @@ public class SqlStorage implements Storage {
     }
 
     private void deleteContacts(Connection conn, String uuid) throws SQLException {
-        sqlHelper.execute("DELETE FROM contact WHERE resume_uuid=?", (ps) -> {
+        try (PreparedStatement ps = conn.prepareStatement("DELETE FROM contact WHERE resume_uuid=?")) {
             ps.setString(1, uuid);
             int rs = ps.executeUpdate();
             if (rs == 0) {
                 throw new NotExistStorageException(uuid);
             }
-            return null;
-        });
+            return ;
+        }
     }
 
     private Resume createResumeFromRs(ResultSet rs, String uuid) throws SQLException {
@@ -146,11 +146,10 @@ public class SqlStorage implements Storage {
         do {
             String value = rs.getString("value");
             String type = rs.getString("type");
-            if (type == null || value == null) {
-                continue;
+            if (type != null || value != null) {
+                ContactType contactType = ContactType.valueOf(type);
+                r.addContact(contactType, value);
             }
-            ContactType contactType = ContactType.valueOf(type);
-            r.addContact(contactType, value);
         } while (rs.next() && rs.getString("uuid").trim().equals(uuid));
         return r;
     }
