@@ -5,6 +5,7 @@ import org.junit.Test;
 import ru.javawebinar.basejava.Config;
 import ru.javawebinar.basejava.exception.ExistStorageException;
 import ru.javawebinar.basejava.exception.NotExistStorageException;
+import ru.javawebinar.basejava.model.ContactType;
 import ru.javawebinar.basejava.model.Organization;
 import ru.javawebinar.basejava.model.Resume;
 
@@ -64,15 +65,15 @@ public abstract class AbstractStorageTest {
             ));
 
     static {
-//        RESUME_1.addContact(ContactType.MAIL, MAIL_1);
-//        RESUME_2.addContact(ContactType.MAIL, MAIL_2);
-//        RESUME_3.addContact(ContactType.MAIL, MAIL_3);
-//        RESUME_4.addContact(ContactType.MAIL, MAIL_4);
-//
-//        RESUME_1.addContact(ContactType.PHONE, PHONE_1);
-//        RESUME_2.addContact(ContactType.PHONE, PHONE_2);
-//        RESUME_3.addContact(ContactType.PHONE, PHONE_3);
-//        RESUME_4.addContact(ContactType.PHONE, PHONE_4);
+        RESUME_1.addContact(ContactType.MAIL, MAIL_1);
+        RESUME_2.addContact(ContactType.MAIL, MAIL_2);
+        RESUME_3.addContact(ContactType.MAIL, MAIL_3);
+        RESUME_4.addContact(ContactType.MAIL, MAIL_4);
+
+        RESUME_1.addContact(ContactType.PHONE, PHONE_1);
+        RESUME_2.addContact(ContactType.PHONE, PHONE_2);
+        RESUME_3.addContact(ContactType.PHONE, PHONE_3);
+        RESUME_4.addContact(ContactType.PHONE, PHONE_4);
 //
 //        RESUME_1.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 1"));
 //        RESUME_2.addSection(SectionType.PERSONAL, new TextSection("PersonalInfo 2"));
