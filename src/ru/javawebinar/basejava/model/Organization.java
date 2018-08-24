@@ -18,6 +18,7 @@ import static ru.javawebinar.basejava.util.DateUtil.NOW;
 @XmlAccessorType(XmlAccessType.FIELD)
 public class Organization implements Serializable {
 
+    public static final Organization EMPTY = new Organization("", "", Position.EMPTY);;
     private static final long serialVersionUID = 1L;
 
     private Link homePage;
@@ -25,6 +26,11 @@ public class Organization implements Serializable {
     private List<Position> positions = new ArrayList<>();
 
     public Organization() {
+    }
+
+    public Organization(Link link, List<Position> positions) {
+        this.homePage = link;
+        this.positions = positions;
     }
 
     public Organization(String name) {
@@ -89,6 +95,8 @@ public class Organization implements Serializable {
 
     @XmlAccessorType(XmlAccessType.FIELD)
     public static class Position implements Serializable {
+
+        public static final Position EMPTY = new Position();
 
         private static final long serialVersionUID = 1L;
 

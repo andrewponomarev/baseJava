@@ -31,6 +31,8 @@ public class Resume implements Comparable<Resume>, Serializable {
     public static final Map<SectionType, Class> sectionTypeClassMap =
             new EnumMap<SectionType, Class>(SectionType.class);
 
+    public static final Resume EMPTY = new Resume();
+
     static {
         sectionTypeClassMap.put(PERSONAL, TextSection.class);
         sectionTypeClassMap.put(OBJECTIVE, TextSection.class);
@@ -38,6 +40,12 @@ public class Resume implements Comparable<Resume>, Serializable {
         sectionTypeClassMap.put(QUALIFICATIONS, ListSection.class);
         sectionTypeClassMap.put(EDUCATION, OrganizationSection.class);
         sectionTypeClassMap.put(EXPERIENCE, OrganizationSection.class);
+        EMPTY.addSection(SectionType.OBJECTIVE, TextSection.EMPTY);
+        EMPTY.addSection(SectionType.PERSONAL, TextSection.EMPTY);
+        EMPTY.addSection(SectionType.ACHIEVEMENT, ListSection.EMPTY);
+        EMPTY.addSection(SectionType.QUALIFICATIONS, ListSection.EMPTY);
+        EMPTY.addSection(SectionType.EXPERIENCE, new OrganizationSection(Organization.EMPTY));
+        EMPTY.addSection(SectionType.EDUCATION, new OrganizationSection(Organization.EMPTY));
     }
 
     public Resume() {
